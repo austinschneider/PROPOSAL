@@ -161,6 +161,7 @@ private:
 
 EPAIR_PARAM_INTEGRAL_DEC(KelnerKokoulinPetrukhin)
 EPAIR_PARAM_INTEGRAL_DEC(SandrockSoedingreksoRhode)
+EPAIR_PARAM_INTEGRAL_DEC(Electrons)
 
 /******************************************************************************
  *                    Declare Interpolant Parametrizations                    *

@@ -51,6 +51,7 @@ public:
         None,
         KelnerKokoulinPetrukhin,
         SandrockSoedingreksoRhode,
+	Electrons,
     };
 
     struct Definition
