@@ -117,7 +117,8 @@ For **Ionization**, there are crosssections for electrons, positrons or heavier 
 
 The **electron pair production** parametrizations are:
   - `"EpairKelnerKokoulinPetrukhin"` (Proc. 12th ICCR (1971), 2436) with corrections for the interaction with atomic electrons (Phys. Atom. Nucl. 61 (1998), 448)
-  - `"EpairSandrockSoedingreksoRhode"` 
+  - `"EpairSandrockSoedingreksoRhode"` (PoS(ICRC2019)429)
+  - `"EpairForElectronPositron"` When Electrons/Positrons are propagated, this cross section should be used, as it takes into account the identical particles in the final states.
 
 The **bremsstrahlung** parametrizations are:
   - `"BremsKelnerKokoulinPetrukhin"` ([Preprint MEPhI (1995) no. 024-95](http://cds.cern.ch/record/288828)) and (Phys. Atom. Nucl. 62 (1999), 272)

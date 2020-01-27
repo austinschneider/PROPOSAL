@@ -375,9 +375,13 @@ void init_parametrization(py::module& m) {
 
             * SandrockSoedingreksoRhode
 
+            * ForElectronPositron
+
             * KelnerKokoulinPetrukhinInterpolant
 
             * SandrockSoedingreksoRhodeInterpolant
+
+            * ForElectronPositronInterpolant
 
             Example:
                 To create a electron pair production parametrization
@@ -396,17 +400,17 @@ void init_parametrization(py::module& m) {
 
     EPAIR_DEF(m_sub_epair, KelnerKokoulinPetrukhin)
     EPAIR_DEF(m_sub_epair, SandrockSoedingreksoRhode)
+    EPAIR_DEF(m_sub_epair, ForElectronPositron)
 
     EPAIR_INTERPOL_DEF(m_sub_epair, KelnerKokoulinPetrukhin)
     EPAIR_INTERPOL_DEF(m_sub_epair, SandrockSoedingreksoRhode)
+    EPAIR_INTERPOL_DEF(m_sub_epair, ForElectronPositron)
 
     py::enum_<EpairProductionFactory::Enum>(m_sub_epair, "EpairParametrization")
-        .value("KelnerKokoulinPetrukhin",
-               EpairProductionFactory::KelnerKokoulinPetrukhin)
-        .value("SandrockSoedingreksoRhode",
-               EpairProductionFactory::SandrockSoedingreksoRhode)
-        .value("None",
-               EpairProductionFactory::None);
+        .value("KelnerKokoulinPetrukhin", EpairProductionFactory::KelnerKokoulinPetrukhin)
+        .value("SandrockSoedingreksoRhode", EpairProductionFactory::SandrockSoedingreksoRhode)
+        .value("ForElectronPositron", EpairProductionFactory::ForElectronPositron)
+        .value("None", EpairProductionFactory::None);
 
     py::class_<EpairProductionFactory,
                std::unique_ptr<EpairProductionFactory, py::nodelete>>(

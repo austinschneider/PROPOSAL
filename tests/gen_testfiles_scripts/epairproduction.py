@@ -25,11 +25,13 @@ multiplier = 1.
 epair = [
     pp.parametrization.pairproduction.KelnerKokoulinPetrukhin,
     pp.parametrization.pairproduction.SandrockSoedingreksoRhode,
+    pp.parametrization.pairproduction.ForElectronPositron,
 ]
 
 epair_interpol = [
     pp.parametrization.pairproduction.KelnerKokoulinPetrukhinInterpolant,
     pp.parametrization.pairproduction.SandrockSoedingreksoRhodeInterpolant,
+    pp.parametrization.pairproduction.ForElectronPositronRhodeInterpolant,
 ]
 
 lpms = [0, 1]

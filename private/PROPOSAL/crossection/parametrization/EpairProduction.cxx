@@ -252,7 +252,7 @@ size_t EpairProductionRhoIntegral::GetHash() const
 
 EPAIR_PARAM_INTEGRAL_IMPL(KelnerKokoulinPetrukhin)
 EPAIR_PARAM_INTEGRAL_IMPL(SandrockSoedingreksoRhode)
-EPAIR_PARAM_INTEGRAL_IMPL(Electrons)
+EPAIR_PARAM_INTEGRAL_IMPL(ForElectronPositron)
 
 // ------------------------------------------------------------------------- //
 double EpairKelnerKokoulinPetrukhin::FunctionToIntegral(double energy, double v, double r)
@@ -506,7 +506,7 @@ double EpairSandrockSoedingreksoRhode::FunctionToIntegral(double energy, double 
     return aux;
 }
 
-double EpairElectrons::FunctionToIntegral(double energy, double v, double r)
+double EpairForElectronPositron::FunctionToIntegral(double energy, double v, double r)
 {
     // Adaptation of the direct muon pair production cross section of muons.
     // Nuclear formfactor effects have been removed as they are negligible for electrons.
@@ -516,10 +516,9 @@ double EpairElectrons::FunctionToIntegral(double energy, double v, double r)
     // DOI: 10.1134/1.1312894
 
 
-    double aux, aux1, aux2, r2, rMax, Z3, xi, beta, A_pow, r_mu;
+    double aux, aux1, aux2, r2, rMax, Z3, xi, beta;
     double phi, U, U_max, X, Y;
     double medium_charge       = components_[component_index_]->GetNucCharge();
-    double atomic_weight       = components_[component_index_]->GetAtomInMolecule();
     double medium_log_constant = components_[component_index_]->GetLogConstant();
     //double medium_log_constant = 183; // According to the paper, B is set to 183
 

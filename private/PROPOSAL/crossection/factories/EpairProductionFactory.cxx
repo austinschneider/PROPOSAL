@@ -17,7 +17,7 @@ EpairProductionFactory::EpairProductionFactory()
 {
     Register("epairkelnerkokoulinpetrukhin", KelnerKokoulinPetrukhin, std::make_pair(&EpairKelnerKokoulinPetrukhin::create, &EpairProductionRhoInterpolant<EpairKelnerKokoulinPetrukhin>::create));
     Register("epairsandrocksoedingreksorhode", SandrockSoedingreksoRhode, std::make_pair(&EpairSandrockSoedingreksoRhode::create, &EpairProductionRhoInterpolant<EpairSandrockSoedingreksoRhode>::create));
-    Register("epairelectrons", Electrons, std::make_pair(&EpairElectrons::create, &EpairProductionRhoInterpolant<EpairElectrons>::create));
+    Register("epairforelectronpositron", ForElectronPositron, std::make_pair(&EpairForElectronPositron::create, &EpairProductionRhoInterpolant<EpairForElectronPositron>::create));
     Register("none", None, std::make_pair(nullptr, nullptr));
 }
 
