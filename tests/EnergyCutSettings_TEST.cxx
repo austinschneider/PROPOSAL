@@ -2,19 +2,35 @@
 #include "gtest/gtest.h"
 
 #include "PROPOSAL/EnergyCutSettings.h"
+#include "PROPOSAL/json.h"
 
 using namespace PROPOSAL;
+
+TEST(Constructor)
+{
+    nlohmann::json config;
+    config["e_cut"] = 500;
+    config["v_cut"] = 0.05;
+    config["cont_rand"] = true;
+
+    EnergyCutSettings A;
+    EnergyCutSettings B(500, 0.05, true);
+    EnergyCutSettings c(config);
+}
+
+TEST(Assignment, Copyconstructor)
+{
+    EnergyCutSettings A(100, 1, false);
+    EnergyCutSettings B(A);
+
+    EXPECT_TRUE(A == B);
+}
 
 TEST(Comparison, Comparison_equal)
 {
     EnergyCutSettings A;
-    EnergyCutSettings B;
+    EnergyCutSettings B(500, 0.05, true);
     EXPECT_TRUE(A == B);
-    EnergyCutSettings* C = new EnergyCutSettings(100, 0.01);
-    EnergyCutSettings* D = new EnergyCutSettings(100, 0.01);
-    EXPECT_TRUE(*C == *D);
-    EnergyCutSettings* E = new EnergyCutSettings(500, 0.05);
-    EXPECT_TRUE(A == *E);
 }
 
 TEST(Comparison, Comparison_not_equal)
@@ -22,58 +38,34 @@ TEST(Comparison, Comparison_not_equal)
     EnergyCutSettings A;
     EnergyCutSettings B(200, 0.09);
     EXPECT_TRUE(A != B);
-    EnergyCutSettings* C = new EnergyCutSettings(200, 0.01);
-    EnergyCutSettings* D = new EnergyCutSettings(100, 0.01);
-    EXPECT_TRUE(*C != *D);
 }
-TEST(Assignment, Copyconstructor)
+
+TEST(Exceptions, wrong ecut)
 {
-    EnergyCutSettings A;
-    EnergyCutSettings B = A;
+    bool thrown {false};
 
-    EXPECT_TRUE(A == B);
+    try {
+        EnergyCutSettings cut(-500, 0.05, true);
+    } catch(const& std::invalid_argument except) {
+        thrown = true;
+    }
+
+    EXPECT_TRUE(thrown);
 }
 
-TEST(Assignment, Copyconstructor2)
+TEST(Exceptions, wrong vcut)
 {
-    EnergyCutSettings A(5000, 0.1);
-    EnergyCutSettings B(A);
+    bool thrown {false};
 
-    EXPECT_TRUE(A == B);
+    try {
+        EnergyCutSettings cut(500, -0.05, true);
+    } catch(const& std::invalid_argument except) {
+        thrown = true;
+    }
+
+    EXPECT_TRUE(thrown);
 }
 
-TEST(Assignment, Operator)
-{
-    EnergyCutSettings A;
-    EnergyCutSettings B(200, 0.01);
-
-    EXPECT_TRUE(A != B);
-
-    B = A;
-
-    EXPECT_TRUE(A == B);
-
-    A.SetEcut(300);
-
-    EXPECT_TRUE(A != B);
-
-    B = A;
-
-    EXPECT_TRUE(A == B);
-}
-
-TEST(Assignment, Swap)
-{
-    EnergyCutSettings A;
-    EnergyCutSettings B;
-    EXPECT_TRUE(A == B);
-    EnergyCutSettings* C = new EnergyCutSettings(100, 0.01);
-    EnergyCutSettings* D = new EnergyCutSettings(100, 0.01);
-    EXPECT_TRUE(*C == *D);
-    A.swap(*C);
-    EXPECT_TRUE(A == *D);
-    EXPECT_TRUE(B == *C);
-}
 
 int main(int argc, char** argv)
 {
