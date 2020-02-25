@@ -31,57 +31,24 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "PROPOSAL/decay/DecayTable.h"
 #include "PROPOSAL/methods.h"
 
-#define PARTICLE_DEF(cls)                                                                                              \
-    class cls##Def : public ParticleDef                                                                                \
-    {                                                                                                                  \
-    public:                                                                                                            \
-        static const cls##Def& Get()                                                                                   \
-        {                                                                                                              \
-            static const cls##Def instance;                                                                            \
-            return instance;                                                                                           \
-        }                                                                                                              \
-                                                                                                                       \
-        cls##Def();                                                                                                    \
-        ~cls##Def();                                                                                                   \
+#define PARTICLE_DEF(cls)                                  \
+    struct cls##Def : public ParticleDef                   \
+    {                                                      \
+        cls##Def();                                        \
+        ~cls##Def();                                       \
     };
 
 namespace PROPOSAL {
-namespace HardComponentTables {
+    typedef std::vector<std::vector<const double> > HardComponentTables;
 
-typedef std::vector<std::vector<double> > VecType;
-
-// ----------------------------------------------------------------------------
-/// @brief Table used for photonuclear interaction
-///
-/// Used in parametrizations with real photon assumption.
-/// This table is needed when propagation muons.
-///
-// ----------------------------------------------------------------------------
-extern const VecType MuonTable;
-
-// ----------------------------------------------------------------------------
-/// @brief Table used for photonuclear interaction
-///
-/// Used in parametrizations with real photon assumption.
-/// This table is needed when propagation taus.
-///
-// ----------------------------------------------------------------------------
-extern const VecType TauTable;
-
-// ----------------------------------------------------------------------------
-/// @brief Table used for photonuclear interaction
-///
-/// Used in parametrizations with real photon assumption.
-/// This table is empty and indicates to do no hard component calculations.
-///
-// ----------------------------------------------------------------------------
-extern const VecType EmptyTable;
-
-} // namespace HardComponentTables
+    enum class CrosssectionType {
+        BremsStrahlung
+    };
 } // namespace PROPOSAL
 
 namespace PROPOSAL {
@@ -126,137 +93,40 @@ enum class ParticleType : int
 namespace PROPOSAL {
 struct ParticleDef
 {
-    class Builder;
-
-    const std::string name;
-    const double mass;
-    const double low; //!< energy below which the particle is lost [MeV]
-    const double lifetime;
-    const double charge;
-    const HardComponentTables::VecType& hard_component_table;
-    const DecayTable decay_table;
-    const int particle_type;
-    const int weak_partner;
-
-    ParticleDef();
-
     ParticleDef(std::string name,
                 double mass,
                 double low,
                 double lifetime,
                 double charge,
-                const HardComponentTables::VecType& table,
-                const DecayTable&,
-                const int,
-                const int);
+                const ParticleType,
+                const ParticleType,
 
-    ParticleDef(const ParticleDef&);
-    virtual ~ParticleDef();
-
-    ParticleDef* clone() const { return new ParticleDef(*this); }
+                std::unique_ptr<std::vector<CrosssectionType>> ,
+                std::unique_ptr<HardComponentTables>,
+                std::unique_ptr<DecayTable>
+                );
 
     bool operator==(const ParticleDef&) const;
     bool operator!=(const ParticleDef&) const;
 
     friend std::ostream& operator<<(std::ostream&, ParticleDef const&);
 
-private:
-    ParticleDef& operator=(const ParticleDef&); // Undefined & not allowed
+    std::string name;
+    double mass;
+    double low; //!< energy below which the particle is lost [MeV]
+    double lifetime;
+    double charge;
+    ParticleType particle_type;
+    ParticleType weak_partner;
+
+    std::unique_ptr<std::vector<CrosssectionType>> crosssections;
+    std::unique_ptr<HardComponentTables> hard_table;
+    std::unique_ptr<DecayTable> decay_table;
 };
 
 
 std::ostream& operator<<(std::ostream&, PROPOSAL::ParticleDef const&);
 
-class ParticleDef::Builder
-{
-public:
-    Builder();
-
-    // --------------------------------------------------------------------- //
-    // Setter
-    // --------------------------------------------------------------------- //
-
-    Builder& SetName(const std::string var)
-    {
-        name = var;
-        return *this;
-    }
-    Builder& SetMass(const double var)
-    {
-        mass = var;
-        return *this;
-    }
-    Builder& SetLow(const double var)
-    {
-        low = var;
-        return *this;
-    }
-    Builder& SetLifetime(const double var)
-    {
-        lifetime = var;
-        return *this;
-    }
-    Builder& SetCharge(const double var)
-    {
-        charge = var;
-        return *this;
-    }
-    Builder& SetHardComponentTable(const HardComponentTables::VecType& var)
-    {
-        hard_component_table = &var;
-        return *this;
-    }
-    Builder& SetDecayTable(const DecayTable& var)
-    {
-        decay_table = var;
-        return *this;
-    }
-    Builder& SetParticleType(const int var)
-    {
-        particle_type = var;
-        return *this;
-    }
-    Builder& SetWeakPartner(const ParticleType& partner)
-    {
-        weak_partner = static_cast<int>(partner);
-        return *this;
-    }
-    Builder& SetParticleDef(const ParticleDef& var)
-    {
-        name                 = var.name;
-        mass                 = var.mass;
-        low                  = var.low;
-        lifetime             = var.lifetime;
-        charge               = var.charge;
-        hard_component_table = &var.hard_component_table;
-        decay_table          = var.decay_table;
-        particle_type        = var.particle_type;
-        weak_partner         = var.weak_partner;
-        return *this;
-    }
-
-    ParticleDef build()
-    {
-
-        if (low < mass)
-        {
-            low = mass;
-        }
-
-        return ParticleDef(name, mass, low, lifetime, charge, *hard_component_table, decay_table, particle_type, weak_partner);
-    }
-
-private:
-    std::string name;
-    double mass;
-    double low;
-    double lifetime;
-    double charge;
-    const HardComponentTables::VecType* hard_component_table;
-    DecayTable decay_table;
-    int particle_type;
-    int weak_partner;
-};
 
 // ------------------------------------------------------------------------- //
 // Predefined particle definitions
@@ -319,31 +189,31 @@ PROPOSAL_MAKE_HASHABLE(PROPOSAL::ParticleDef, t.mass, t.lifetime, t.charge)
 #undef PARTICLE_DEF
 
 namespace PROPOSAL {
-static std::map<const int, const ParticleDef&> Type_Particle_Map
+static std::map<ParticleType, const ParticleDef&> Type_Particle_Map
 {
-    {static_cast<int>(ParticleType::EMinus), EMinusDef::Get()},
-    {static_cast<int>(ParticleType::EPlus), EPlusDef::Get()},
-    {static_cast<int>(ParticleType::NuE), NuEDef::Get()},
-    {static_cast<int>(ParticleType::NuEBar), NuEBarDef::Get()},
-    {static_cast<int>(ParticleType::MuMinus), MuMinusDef::Get()},
-    {static_cast<int>(ParticleType::NuMu), NuMuDef::Get()},
-    {static_cast<int>(ParticleType::NuMuBar), NuMuBarDef::Get()},
-    {static_cast<int>(ParticleType::MuPlus), MuPlusDef::Get()},
-    {static_cast<int>(ParticleType::TauMinus), TauMinusDef::Get()},
-    {static_cast<int>(ParticleType::TauPlus), TauPlusDef::Get()},
-    {static_cast<int>(ParticleType::NuTau), NuTauDef::Get()},
-    {static_cast<int>(ParticleType::NuTauBar), NuTauBarDef::Get()},
-    {static_cast<int>(ParticleType::Gamma), GammaDef::Get()},
-    {static_cast<int>(ParticleType::Pi0), Pi0Def::Get()},
-    {static_cast<int>(ParticleType::PiPlus), PiPlusDef::Get()},
-    {static_cast<int>(ParticleType::PiMinus ),PiMinusDef::Get()},
-    {static_cast<int>(ParticleType::K0), K0Def::Get()},
-    {static_cast<int>(ParticleType::KPlus), KPlusDef::Get()},
-    {static_cast<int>(ParticleType::KMinus), KMinusDef::Get()},
-    {static_cast<int>(ParticleType::PPlus), PPlusDef::Get()},
-    {static_cast<int>(ParticleType::PMinus), PMinusDef::Get()},
-    {static_cast<int>(ParticleType::Monopole), MonopoleDef::Get()},
-    {static_cast<int>(ParticleType::SMPPlus), SMPPlusDef::Get()},
-    {static_cast<int>(ParticleType::SMPMinus), SMPMinusDef::Get()},
+    {ParticleType::EMinus, EMinusDef()},
+    {ParticleType::EPlus, EPlusDef()},
+    {ParticleType::NuE, NuEDef()},
+    {ParticleType::NuEBar, NuEBarDef()},
+    {ParticleType::MuMinus, MuMinusDef()},
+    {ParticleType::NuMu, NuMuDef()},
+    {ParticleType::NuMuBar, NuMuBarDef()},
+    {ParticleType::MuPlus, MuPlusDef()},
+    {ParticleType::TauMinus, TauMinusDef()},
+    {ParticleType::TauPlus, TauPlusDef()},
+    {ParticleType::NuTau, NuTauDef()},
+    {ParticleType::NuTauBar, NuTauBarDef()},
+    {ParticleType::Gamma, GammaDef()},
+    {ParticleType::Pi0, Pi0Def()},
+    {ParticleType::PiPlus, PiPlusDef()},
+    {ParticleType::PiMinus ,PiMinusDef()},
+    {ParticleType::K0, K0Def()},
+    {ParticleType::KPlus, KPlusDef()},
+    {ParticleType::KMinus, KMinusDef()},
+    {ParticleType::PPlus, PPlusDef()},
+    {ParticleType::PMinus, PMinusDef()},
+    {ParticleType::Monopole, MonopoleDef()},
+    {ParticleType::SMPPlus, SMPPlusDef()},
+    {ParticleType::SMPMinus, SMPMinusDef()},
 };
 } // namespace PROPOSAL
