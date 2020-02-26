@@ -84,7 +84,7 @@ ParticleDef::ParticleDef(std::string name,
                          double charge,
                          const ParticleType particle_type,
                          const ParticleType weak_partner,
-                         std::unqiue_ptr<std::vector<CrosssectionType>> crosssection = nullptr,
+                         std::unqiue_ptr<std::vector<std::string>> crosssection = nullptr,
                          std::unique_ptr<HardComponentTables> hard_table = nullptr,
                          std::unqiue_ptr<DecayTable> decay_table = nullptr)
     : name(name)
@@ -203,7 +203,6 @@ EPlusDef::EPlusDef()
             ParticleType::NuEBar,
             )
 {
-            crosssections.reset(new std::vector<CrosssectionType>(CrosssectionType::BremsStrahlung));
 }
 
 EPlusDef::~EPlusDef() {}
@@ -240,6 +239,7 @@ MuPlusDef::MuPlusDef()
                   )
 {
             hard_table.reset(&MuonHardComponentTables),
+            crosssections.reset(new std::vector<std::string>("bremssandrocksoedingreksorhode", "ionizbetheblochrossi"));
             decay_table.reset(new DecayTable());
             decay_table->addChannel(1.0, LeptonicDecayChannelApprox(EPlusDef, NuMuBarDef, NuEDef));
 }
@@ -314,7 +314,6 @@ GammaDef::GammaDef()
         ParticleType::None,
         )
 {
-        crosssections.reset(new std::vector<CrosssectionType>(CrosssectionType::BremsStrahlung));
 }
 
 GammaDef::~GammaDef() {}

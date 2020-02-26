@@ -45,10 +45,6 @@
 
 namespace PROPOSAL {
     typedef std::vector<std::vector<const double> > HardComponentTables;
-
-    enum class CrosssectionType {
-        BremsStrahlung
-    };
 } // namespace PROPOSAL
 
 namespace PROPOSAL {
@@ -101,7 +97,7 @@ struct ParticleDef
                 const ParticleType,
                 const ParticleType,
 
-                std::unique_ptr<std::vector<CrosssectionType>> ,
+                std::unique_ptr<std::vector<std::string>> ,
                 std::unique_ptr<HardComponentTables>,
                 std::unique_ptr<DecayTable>
                 );
@@ -119,7 +115,7 @@ struct ParticleDef
     ParticleType particle_type;
     ParticleType weak_partner;
 
-    std::unique_ptr<std::vector<CrosssectionType>> crosssections;
+    std::unique_ptr<std::vector<std::string>> crosssections;
     std::unique_ptr<HardComponentTables> hard_table;
     std::unique_ptr<DecayTable> decay_table;
 };
