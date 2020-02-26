@@ -46,6 +46,8 @@ public:
     // ----------------------------------------------------------------- //
     double Delta(double beta, double gamma);
     double DifferentialCrossSection(double energy, double v) = 0;
+
+    virtual bool IsOnlyStochastic() const final {return false;}
 private:
 
 };

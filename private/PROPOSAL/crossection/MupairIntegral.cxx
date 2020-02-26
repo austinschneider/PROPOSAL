@@ -60,11 +60,11 @@ double MupairIntegral::CalculatedEdxWithoutMultiplier(double energy)
     return energy * sum;
 }
 
-std::pair<std::vector<DynamicData>, bool> MupairIntegral::CalculateProducedParticles(double energy, double energy_loss, const Vector3D& initial_direction){
+std::vector<DynamicData> MupairIntegral::CalculateProducedParticles(double energy, double energy_loss, const Vector3D& initial_direction){
     std::vector<DynamicData> mupair;
 
     if(parametrization_->IsParticleOutputEnabled() == false){
-        return std::make_pair(mupair, false);
+        return mupair;
     }
 
     //Create MuPair particles
@@ -82,7 +82,7 @@ std::pair<std::vector<DynamicData>, bool> MupairIntegral::CalculateProducedParti
     mupair[1].SetEnergy(0.5*energy_loss*(1 - rho));
     mupair[0].SetDirection(initial_direction);
     mupair[1].SetDirection(initial_direction);
-    return std::make_pair(mupair, false);
+    return mupair;
 
 }
 

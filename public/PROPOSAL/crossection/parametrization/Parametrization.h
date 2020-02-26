@@ -78,6 +78,8 @@ public:
 
     virtual IntegralLimits GetIntegralLimits(double energy) = 0;
 
+    virtual bool IsOnlyStochastic() const = 0;
+
     // ----------------------------------------------------------------- //
     // Getter
     // ----------------------------------------------------------------- //

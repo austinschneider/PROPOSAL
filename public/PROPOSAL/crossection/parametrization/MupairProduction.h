@@ -96,6 +96,8 @@ public:
 
     virtual bool IsParticleOutputEnabled() const {return particle_output_;};
 
+    virtual bool IsOnlyStochastic() const final {return false;}
+
 protected:
     bool compare(const Parametrization&) const;
     Integral drho_integral_;

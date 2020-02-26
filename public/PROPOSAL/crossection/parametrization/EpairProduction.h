@@ -98,6 +98,7 @@ public:
 
     virtual IntegralLimits GetIntegralLimits(double energy);
 
+    virtual bool IsOnlyStochastic() const final {return false;}
 
 protected:
     bool compare(const Parametrization&) const;

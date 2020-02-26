@@ -50,7 +50,7 @@ public:
 
     double CalculatedEdx(double energy);
     double CalculatedEdxWithoutMultiplier(double energy);
-    std::pair<std::vector<DynamicData>, bool> CalculateProducedParticles(double energy, double energy_loss, const Vector3D& initial_direction);
+    std::vector<DynamicData> CalculateProducedParticles(double energy, double energy_loss, const Vector3D& initial_direction);
 
 private:
     InteractionType GetType(const MupairProduction& param);

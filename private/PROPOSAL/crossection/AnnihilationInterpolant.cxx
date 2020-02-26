@@ -62,7 +62,7 @@ double AnnihilationInterpolant::CalculateStochasticLoss(double energy, double rn
     return energy; // losses are always catastrophic
 }
 
-std::pair<std::vector<DynamicData>, bool> AnnihilationInterpolant::CalculateProducedParticles(double energy,
+std::vector<DynamicData> AnnihilationInterpolant::CalculateProducedParticles(double energy,
                                                                                             double energy_loss,
                                                                                             const Vector3D& initial_direction) {
     (void)energy_loss;
@@ -74,7 +74,7 @@ std::pair<std::vector<DynamicData>, bool> AnnihilationInterpolant::CalculateProd
         //CalculateStochasticLoss has never been called before, return empty list
         //TODO: find a better way of checking the random numbers
         log_warn("CalculateProducedParticles has been called with no call of CalculateStochasticLoss for PhotoPairProduction");
-        return std::make_pair(particle_list, true);
+        return particle_list;
     }
 
     particle_list.push_back(DynamicData(gamma_def_->particle_type));
@@ -109,12 +109,12 @@ std::pair<std::vector<DynamicData>, bool> AnnihilationInterpolant::CalculateProd
             particle_list[0].DeflectDirection(cosphi0, rndtheta * 2. * PI);
             particle_list[1].DeflectDirection(cosphi1, std::fmod(rndtheta * 2. * PI + PI, 2. * PI));
 
-            return std::make_pair(particle_list, true);
+            return particle_list;
         }
     }
 
 
     log_fatal("could not sample ProducedParticles for PhotoPairProduction!");
-    return std::make_pair(particle_list, true);
+    return particle_list;
 
 }

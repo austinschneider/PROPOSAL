@@ -51,7 +51,7 @@ double PhotoPairIntegral::CalculateStochasticLoss(double energy, double rnd1, do
 }
 
 // ------------------------------------------------------------------------- //
-std::pair<std::vector<DynamicData>, bool> PhotoPairIntegral::CalculateProducedParticles(double energy, double energy_loss, const Vector3D& initial_direction){
+std::vector<DynamicData> PhotoPairIntegral::CalculateProducedParticles(double energy, double energy_loss, const Vector3D& initial_direction){
     (void)energy_loss;
     double rnd;
     double rsum;
@@ -63,7 +63,7 @@ std::pair<std::vector<DynamicData>, bool> PhotoPairIntegral::CalculateProducedPa
         //CalculateStochasticLoss has never been called before, return empty list
         //TODO: find a better way of checking the random numbers
         log_warn("CalculateProducedParticles has been called with no call of CalculateStochasticLoss for PhotoPairProduction");
-        return std::make_pair(particle_list, true);
+        return particle_list;
     }
 
     particle_list.push_back(DynamicData(eplus_def_->particle_type));
@@ -91,11 +91,11 @@ std::pair<std::vector<DynamicData>, bool> PhotoPairIntegral::CalculateProducedPa
             particle_list[0].DeflectDirection(angles.cosphi0, angles.theta0);
             particle_list[1].DeflectDirection(angles.cosphi1, angles.theta1);
 
-            return std::make_pair(particle_list, true);
+            return particle_list;
         }
     }
 
 
     log_fatal("could not sample ProducedParticles for PhotoPairProduction!");
-    return std::make_pair(particle_list, true);
+    return particle_list;
 }

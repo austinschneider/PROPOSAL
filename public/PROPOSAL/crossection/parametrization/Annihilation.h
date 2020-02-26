@@ -57,6 +57,8 @@ namespace PROPOSAL {
 
         virtual size_t GetHash() const;
 
+        virtual bool IsOnlyStochastic() const final {return true;}
+
     protected:
         bool compare(const Parametrization&) const;
 

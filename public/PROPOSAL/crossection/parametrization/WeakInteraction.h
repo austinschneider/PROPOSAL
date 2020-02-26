@@ -93,7 +93,9 @@ public:
 
         const std::string& GetName() const { return name_; }
 
-    protected:
+        virtual bool IsOnlyStochastic() const final {return true;}
+
+protected:
         static const std::string name_;
 
         virtual bool compare(const Parametrization&) const;
