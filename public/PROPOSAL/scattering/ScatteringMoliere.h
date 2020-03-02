@@ -41,27 +41,17 @@ class ScatteringMoliere : public Scattering
 {
 public:
     // constructor
-    ScatteringMoliere(const ParticleDef&, const Medium&);
-    ScatteringMoliere(const ParticleDef&, const ScatteringMoliere&);
-    ScatteringMoliere(const ScatteringMoliere&);
-    ~ScatteringMoliere();
-
-    Scattering* clone() const override { return new ScatteringMoliere(*this); }
-    virtual Scattering* clone(const ParticleDef& particle_def, const Utility& utility) const override
-    {
-        (void)utility;
-        return new ScatteringMoliere(particle_def, *this);
-    }
+    ScatteringMoliere(const ParticleDef&, std::shared_ptr<Medium>);
+    /* ScatteringMoliere(const ParticleDef&, const ScatteringMoliere&); */
+    /* ScatteringMoliere(const ScatteringMoliere&); */
+    ~ScatteringMoliere() {};
 
 private:
-    ScatteringMoliere& operator=(const ScatteringMoliere&); // Undefined & not allowed
+    /* void print(std::ostream&) const override; */
 
-    bool compare(const Scattering&) const override;
-    void print(std::ostream&) const override;
+    array<double, 4> CalculateRandomAngle(double , double , double , const Vector3D& , const array<double, 4>&) const override;
 
-    RandomAngles CalculateRandomAngle(double dr, double ei, double ef, const Vector3D& pos, double rnd1, double rnd2, double rnd3, double rnd4) override;
-
-    const Medium* medium_;
+    std::shared_ptr<Medium> medium_;
 
     int numComp_; // number of components in medium
     double ZSq_A_average_;

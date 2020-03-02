@@ -26,75 +26,47 @@
  *                                                                            *
  ******************************************************************************/
 
-
 #pragma once
-#include <utility>
-#include <memory>
 #include "PROPOSAL/math/Vector3D.h"
+#include <memory>
+#include <utility>
 
+using std::array;
+using std::tuple;
 namespace PROPOSAL {
 
 struct ParticleDef;
 class Utility;
 
-struct Directions : std::enable_shared_from_this<Directions>
-{
-    Directions() : u_(0,0,0), n_i_(0,0,0) {};
-    Directions(Vector3D u, Vector3D n_i) : u_(u), n_i_(n_i) {};
+enum Directions { AVERAGED, FINAL };
 
-    Vector3D u_;
-    Vector3D n_i_;
-};
-
-class Scattering
-{
+class Scattering {
 public:
     Scattering(const ParticleDef&);
-    Scattering(const Scattering&);
+    /* Scattering(const Scattering&); */
     virtual ~Scattering();
 
-    bool operator==(const Scattering& scattering) const;
-    bool operator!=(const Scattering& scattering) const;
+    /* bool operator==(const Scattering& scattering) const; */
+    /* bool operator!=(const Scattering& scattering) const; */
+
     friend std::ostream& operator<<(std::ostream&, Scattering const&);
 
-    virtual Scattering* clone() const                          = 0; // virtual constructor idiom (used for deep copies)
-    virtual Scattering* clone(const ParticleDef&, const Utility&) const = 0; // virtual constructor idiom (used for deep copies)
 
-
-    Directions Scatter(double dr, double ei, double ef, const Vector3D& pos, const Vector3D& old_direction);
-    Directions Scatter(double dr,
-                        double ei,
-                        double ef,
-                        const Vector3D& pos,
-                        const Vector3D& old_direction,
-                        double rnd1,
-                        double rnd2,
-                        double rnd3,
-                        double rnd4);
-
-    const ParticleDef& GetParticleDef() const { return particle_def_; }
+    Directions Scatter(double, double, double, const Vector3D&, const Vector3D&,
+        const array<double, 4>&);
 
 protected:
     Scattering& operator=(const Scattering&); // Undefined & not allowed
 
     // Implemented in child classes to be able to use equality operator
     virtual bool compare(const Scattering&) const = 0;
-    virtual void print(std::ostream&) const     = 0;
+    virtual void print(std::ostream&) const = 0;
 
-    struct RandomAngles
-    {
-        double sx, sy, tx, ty;
-    };
+    enum RandomDirections : unsigned short { sx, sy, tx, ty };
 
-    RandomAngles CalculateRandomAngle(double dr, double ei, double ef, const Vector3D& pos);
-    virtual RandomAngles CalculateRandomAngle(double dr,
-                                              double ei,
-                                              double ef,
-                                              const Vector3D& pos,
-                                              double rnd1,
-                                              double rnd2,
-                                              double rnd3,
-                                              double rnd4) = 0;
+    virtual array<double, 4> CalculateRandomAngle(
+        double, double, double, const Vector3D&, const array<double, 4>&) const
+        = 0;
 
     const ParticleDef& particle_def_;
 };

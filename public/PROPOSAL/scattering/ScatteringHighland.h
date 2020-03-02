@@ -26,7 +26,6 @@
  *                                                                            *
  ******************************************************************************/
 
-
 #pragma once
 
 #include "PROPOSAL/scattering/Scattering.h"
@@ -40,31 +39,25 @@ class Medium;
  *
  * More precise scattering angles will be added soon.
  */
-class ScatteringHighland : public Scattering
-{
+class ScatteringHighland : public Scattering {
 public:
-    ScatteringHighland(const ParticleDef&, const Medium&);
+    ScatteringHighland(const ParticleDef&, std::shared_ptr<Medium>);
     ScatteringHighland(const ParticleDef&, const ScatteringHighland&);
     ScatteringHighland(const ScatteringHighland&);
     ~ScatteringHighland();
 
-    virtual Scattering* clone() const override { return new ScatteringHighland(*this); }
-    virtual Scattering* clone(const ParticleDef& particle_def, const Utility& utility) const override
-    {
-        (void)utility;
-        return new ScatteringHighland(particle_def, *this);
-    }
-
 private:
-    ScatteringHighland& operator=(const ScatteringHighland&); // Undefined & not allowed
+    ScatteringHighland& operator=(
+        const ScatteringHighland&); // Undefined & not allowed
 
     bool compare(const Scattering&) const override;
     void print(std::ostream&) const override;
 
-    RandomAngles CalculateRandomAngle(double dr, double ei, double ef, const Vector3D& pos, double rnd1, double rnd2, double rnd3, double rnd4) override;
+    virtual array<double, 4> CalculateRandomAngle(double, double, double,
+        const Vector3D&, const array<double, 4>&) const override;
     double CalculateTheta0(double dr, double ei, const Vector3D& pos);
 
-    const Medium* medium_;
+    std::shared_ptr<Medium> medium_;
 };
 
 } // namespace PROPOSAL

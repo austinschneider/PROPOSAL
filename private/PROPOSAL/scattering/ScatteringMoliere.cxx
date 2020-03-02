@@ -17,14 +17,11 @@ using namespace PROPOSAL;
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
 
-Scattering::RandomAngles ScatteringMoliere::CalculateRandomAngle(double dr,
+array<double, 4> ScatteringMoliere::CalculateRandomAngle(double dr,
                                                                  double ei,
                                                                  double ef,
                                                                  const Vector3D& pos,
-                                                                 double rnd1,
-                                                                 double rnd2,
-                                                                 double rnd3,
-                                                                 double rnd4) {
+                                                                 array<double, 4> rnd) {
     (void)ef;
 
     double momentum_Sq = (ei - particle_def_.mass) * (ei + particle_def_.mass);
@@ -34,11 +31,9 @@ Scattering::RandomAngles ScatteringMoliere::CalculateRandomAngle(double dr,
     double beta_p_Sq = momentum_Sq / ei;
     beta_p_Sq *= beta_p_Sq;
 
-    double chi_0 = 0.;
+    double chi_0;
 
-    std::vector<double> chi_A_Sq; // screening angle^2 in rad^2
-    chi_A_Sq.resize(numComp_);
-
+    std::vector<double> chi_A_Sq(numComp_); // screening angle^2 in rad^2
     for (int i = 0; i < numComp_; i++) {
         // Calculate Chi_0 * p
         chi_0 = ME * ALPHA * std::pow(Zi_[i] * 128. / (9. * PI * PI), 1. / 3.);
@@ -55,9 +50,6 @@ Scattering::RandomAngles ScatteringMoliere::CalculateRandomAngle(double dr,
           dr) / beta_p_Sq) *
         ZSq_A_average_;
 
-    // Calculate B
-    Scattering::RandomAngles random_angles;
-
     for (int i = 0; i < numComp_; i++) {
         // calculate B-ln(B) = ln(chi_c^2/chi_a^2)+1-2*EULER_MASCHERONI via
         // Newton-Raphson method
@@ -72,11 +64,7 @@ Scattering::RandomAngles ScatteringMoliere::CalculateRandomAngle(double dr,
         //  Check for inappropriate values of B. If B < 4.5 it is practical to
         //  assume no deviation.
         if ((xn < 4.5) || xn != xn) {
-            random_angles.sx = 0;
-            random_angles.sy = 0;
-            random_angles.tx = 0;
-            random_angles.ty = 0;
-            return random_angles;
+            return {0,0,0,0};
         }
 
         B_[i] = xn;
@@ -84,19 +72,19 @@ Scattering::RandomAngles ScatteringMoliere::CalculateRandomAngle(double dr,
 
     double pre_factor = std::sqrt(chiCSq_ * B_[max_weight_index_]);
 
-    rnd1 = GetRandom(pre_factor, rnd1);
-    rnd2 = GetRandom(pre_factor, rnd2);
+    rnd[0] = GetRandom(pre_factor, rnd[0]);
+    rnd[1] = GetRandom(pre_factor, rnd[1]);
 
-    random_angles.sx = 0.5 * (rnd1 / SQRT3 + rnd2);
-    random_angles.tx = rnd2;
+    auto sx = 0.5 * (rnd[0] / SQRT3 + rnd[1]);
+    auto tx = rnd[1];
 
-    rnd1 = GetRandom(pre_factor, rnd3);
-    rnd2 = GetRandom(pre_factor, rnd4);
+    rnd[0] = GetRandom(pre_factor, rnd[2]);
+    rnd[1] = GetRandom(pre_factor, rnd[3]);
 
-    random_angles.sy = 0.5 * (rnd1 / SQRT3 + rnd2);
-    random_angles.ty = rnd2;
+    auto sy = 0.5 * (rnd[0] / SQRT3 + rnd[1]);
+    auto ty = rnd[1];
 
-    return random_angles;
+    return {sx, sy tx, ty};
 }
 
 //----------------------------------------------------------------------------//
@@ -105,9 +93,9 @@ Scattering::RandomAngles ScatteringMoliere::CalculateRandomAngle(double dr,
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
 
-ScatteringMoliere::ScatteringMoliere(const ParticleDef& particle_def, const Medium& medium)
+ScatteringMoliere::ScatteringMoliere(const ParticleDef& particle_def, std::shared_ptr<Medium> medium)
     : Scattering(particle_def),
-      medium_(medium.clone()),
+      medium_(medium),
       numComp_(medium_->GetNumComponents()),
       ZSq_A_average_(0.0),
       Zi_(numComp_),
@@ -162,70 +150,70 @@ ScatteringMoliere::ScatteringMoliere(const ParticleDef& particle_def, const Medi
     }
 }
 
-ScatteringMoliere::ScatteringMoliere(const ScatteringMoliere& scattering)
-    : Scattering(scattering),
-      medium_(scattering.medium_->clone()),
-      numComp_(scattering.numComp_),
-      ZSq_A_average_(scattering.ZSq_A_average_),
-      Zi_(scattering.Zi_),
-      weight_ZZ_(scattering.weight_ZZ_),
-      weight_ZZ_sum_(scattering.weight_ZZ_sum_),
-      max_weight_index_(scattering.max_weight_index_),
-      chiCSq_(scattering.chiCSq_),
-      B_(scattering.B_) {}
+/* ScatteringMoliere::ScatteringMoliere(const ScatteringMoliere& scattering) */
+/*     : Scattering(scattering), */
+/*       medium_(scattering.medium_->clone()), */
+/*       numComp_(scattering.numComp_), */
+/*       ZSq_A_average_(scattering.ZSq_A_average_), */
+/*       Zi_(scattering.Zi_), */
+/*       weight_ZZ_(scattering.weight_ZZ_), */
+/*       weight_ZZ_sum_(scattering.weight_ZZ_sum_), */
+/*       max_weight_index_(scattering.max_weight_index_), */
+/*       chiCSq_(scattering.chiCSq_), */
+/*       B_(scattering.B_) {} */
 
-ScatteringMoliere::ScatteringMoliere(const ParticleDef& particle_def,
-                                     const ScatteringMoliere& scattering)
-    : Scattering(particle_def),
-      medium_(scattering.medium_->clone()),
-      numComp_(scattering.numComp_),
-      ZSq_A_average_(scattering.ZSq_A_average_),
-      Zi_(scattering.Zi_),
-      weight_ZZ_(scattering.weight_ZZ_),
-      weight_ZZ_sum_(scattering.weight_ZZ_sum_),
-      max_weight_index_(scattering.max_weight_index_),
-      chiCSq_(scattering.chiCSq_),
-      B_(scattering.B_) {}
+/* ScatteringMoliere::ScatteringMoliere(const ParticleDef& particle_def, */
+/*                                      const ScatteringMoliere& scattering) */
+/*     : Scattering(particle_def), */
+/*       medium_(scattering.medium_->clone()), */
+/*       numComp_(scattering.numComp_), */
+/*       ZSq_A_average_(scattering.ZSq_A_average_), */
+/*       Zi_(scattering.Zi_), */
+/*       weight_ZZ_(scattering.weight_ZZ_), */
+/*       weight_ZZ_sum_(scattering.weight_ZZ_sum_), */
+/*       max_weight_index_(scattering.max_weight_index_), */
+/*       chiCSq_(scattering.chiCSq_), */
+/*       B_(scattering.B_) {} */
 
-ScatteringMoliere::~ScatteringMoliere() {
-    delete medium_;
-}
+/* ScatteringMoliere::~ScatteringMoliere() { */
+/*     delete medium_; */
+/* } */
 
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
 
-bool ScatteringMoliere::compare(const Scattering& scattering) const {
-    const ScatteringMoliere* scatteringMoliere =
-        dynamic_cast<const ScatteringMoliere*>(&scattering);
+/* bool ScatteringMoliere::compare(const Scattering& scattering) const { */
+/*     const ScatteringMoliere* scatteringMoliere = */
+/*         dynamic_cast<const ScatteringMoliere*>(&scattering); */
 
-    if (!scatteringMoliere)
-        return false;
-    else if (*medium_ != *scatteringMoliere->medium_)
-        return false;
-    else if (numComp_ != scatteringMoliere->numComp_)
-        return false;
-    else if (ZSq_A_average_ != scatteringMoliere->ZSq_A_average_)
-        return false;
-    else if (Zi_ != scatteringMoliere->Zi_)
-        return false;
-    else if (weight_ZZ_ != scatteringMoliere->weight_ZZ_)
-        return false;
-    else if (weight_ZZ_sum_ != scatteringMoliere->weight_ZZ_sum_)
-        return false;
-    else if (max_weight_index_ != scatteringMoliere->max_weight_index_)
-        return false;
-    else if (chiCSq_ != scatteringMoliere->chiCSq_)
-        return false;
-    else if (B_ != scatteringMoliere->B_)
-        return false;
-    else
-        return true;
-}
+/*     if (!scatteringMoliere) */
+/*         return false; */
+/*     else if (*medium_ != *scatteringMoliere->medium_) */
+/*         return false; */
+/*     else if (numComp_ != scatteringMoliere->numComp_) */
+/*         return false; */
+/*     else if (ZSq_A_average_ != scatteringMoliere->ZSq_A_average_) */
+/*         return false; */
+/*     else if (Zi_ != scatteringMoliere->Zi_) */
+/*         return false; */
+/*     else if (weight_ZZ_ != scatteringMoliere->weight_ZZ_) */
+/*         return false; */
+/*     else if (weight_ZZ_sum_ != scatteringMoliere->weight_ZZ_sum_) */
+/*         return false; */
+/*     else if (max_weight_index_ != scatteringMoliere->max_weight_index_) */
+/*         return false; */
+/*     else if (chiCSq_ != scatteringMoliere->chiCSq_) */
+/*         return false; */
+/*     else if (B_ != scatteringMoliere->B_) */
+/*         return false; */
+/*     else */
+/*         return true; */
+/* } */
 
-void ScatteringMoliere::print(std::ostream& os) const
-{
-    os << "Medium:\n" << *medium_ << '\n';
-}
+/* void ScatteringMoliere::print(std::ostream& os) const */
+/* { */
+/*     os << "Medium:\n" << *medium_ << '\n'; */
+/* } */
 
 //----------------------------------------------------------------------------//
 //----------------------------------------------------------------------------//
