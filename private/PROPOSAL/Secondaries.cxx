@@ -30,37 +30,22 @@ void Secondaries::push_back(const DynamicData& continuous_loss)
 }
 
 void Secondaries::emplace_back(const int& type, const Vector3D& position,
-    const Vector3D& direction, const double& energy,
-    const double& parent_particle_energy, const double& time,
-    const double& distance)
+        const Vector3D& direction, const double& energy,
+        const double& parent_particle_energy, const double& time,
+        const double& distance)
 {
     secondaries_.emplace_back(type, position, direction, energy,
-        parent_particle_energy, time, distance);
+            parent_particle_energy, time, distance);
 }
 void Secondaries::emplace_back(const int& type)
 {
     secondaries_.emplace_back(type);
 }
 
-// void Secondaries::push_back(const Particle& particle, const int&
-// interaction_type, const double& energy_loss)
-// {
-//     DynamicData data(interaction_type);
-
-//     data.SetEnergy(energy_loss);
-//     data.SetPosition(particle.GetPosition());
-//     data.SetDirection(particle.GetDirection());
-//     data.SetTime(particle.GetTime());
-//     data.SetParentParticleEnergy(particle.GetEnergy());
-//     data.SetPropagatedDistance(particle.GetPropagatedDistance());
-
-//     secondaries_.push_back(data);
-// }
-
 void Secondaries::append(Secondaries& secondaries)
 {
     secondaries_.insert(secondaries_.end(), secondaries.secondaries_.begin(),
-        secondaries.secondaries_.end());
+            secondaries.secondaries_.end());
 }
 
 Secondaries Secondaries::Query(const int& interaction_type) const
@@ -93,26 +78,18 @@ Secondaries Secondaries::Query(const Geometry& geometry) const
     return sec;
 }
 
-void Secondaries::DoDecay()
+std::vector<DynamicData> Secondaries::GetDecayProducts()
 {
-    for (auto it = secondaries_.begin(); it != secondaries_.end();) {
-        if (it->GetType() == static_cast<int>(InteractionType::Decay)) {
+    for (const auto& it : secondaries_) {
+        if (it.GetType() == static_cast<int>(InteractionType::Decay)) {
             DynamicData decaying_particle(primary_def_->particle_type,
-                it->GetPosition(), it->GetDirection(), it->GetEnergy(),
-                it->GetParentParticleEnergy(), it->GetTime(),
-                it->GetPropagatedDistance());
-            double random_ch = RandomGenerator::Get().RandomDouble();
-            Secondaries products
-                = primary_def_->decay_table.SelectChannel(random_ch).Decay(
-                    *primary_def_, decaying_particle);
-            it = secondaries_.erase(it); // delete old decay
-            for (auto p : products.GetSecondaries()) {
-                // and insert decayparticles inplace of old decay
-                it = secondaries_.insert(it, std::move(p));
-                it++;
-            }
-        } else {
-            it++;
+                    it.GetPosition(), it.GetDirection(), it.GetEnergy(),
+                    it.GetParentParticleEnergy(), it.GetTime(),
+                    it.GetPropagatedDistance());
+
+            auto rnd = RandomGenerator::Get().RandomDouble();
+
+            return primary_def_->decay_table.SelectChannel(rnd).Decay(*primary_def_, decaying_particle);
         }
     }
 }
@@ -200,7 +177,7 @@ Secondaries Secondaries::GetOnlyLostInsideDetector() const
     Secondaries croped_secondaries;
     for (DynamicData p : secondaries_) {
         if (p.GetTime() >= entry_point_->GetTime()
-            && p.GetTime() <= exit_point_->GetTime()) {
+                && p.GetTime() <= exit_point_->GetTime()) {
             croped_secondaries.push_back(p);
         }
     }

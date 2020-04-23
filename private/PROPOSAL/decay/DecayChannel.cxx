@@ -72,9 +72,9 @@ void DecayChannel::Boost(DynamicData& particle, const Vector3D& direction_unnorm
 }
 
 // ------------------------------------------------------------------------- //
-void DecayChannel::Boost(Secondaries& secondaries, const Vector3D& direction, double gamma, double betagamma)
+void DecayChannel::Boost(std::vector<DynamicData>& secondaries, const Vector3D& direction, double gamma, double betagamma)
 {
-    for (auto& p : secondaries.GetModifyableSecondaries())
+    for (auto& p : secondaries)
     {
         Boost(p, direction, gamma, betagamma);
     }

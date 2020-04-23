@@ -265,7 +265,7 @@ void init_particle(py::module& m) {
             R"pbdoc(List of secondaries)pbdoc")
         .def("Query", overload_cast_<const int&>()(&Secondaries::Query, py::const_), py::arg("Interaction"))
         .def("Query", overload_cast_<const std::string&>()(&Secondaries::Query, py::const_), py::arg("Interaction"))
-        .def("decay", &Secondaries::DoDecay)
+        .def("decay", &Secondaries::GetDecayProducts)
         .def_property_readonly("particles", &Secondaries::GetSecondaries)
         .def_property_readonly("number_of_particles", &Secondaries::GetNumberOfParticles)
         .def_property_readonly("position", &Secondaries::GetPosition)

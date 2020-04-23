@@ -63,7 +63,7 @@ public:
     Secondaries Query(const std::string&) const;
     Secondaries Query(const Geometry& geometry) const;
 
-    void DoDecay();
+    std::vector<DynamicData> GetDecayProducts(); // return only produced decay particles
 
     std::vector<Vector3D> GetPosition() const;
     std::vector<Vector3D> GetDirection() const;

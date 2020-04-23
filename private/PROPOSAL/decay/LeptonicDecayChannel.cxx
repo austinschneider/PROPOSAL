@@ -97,7 +97,7 @@ double LeptonicDecayChannelApprox::FindRoot(double min, double parent_mass, doub
 }
 
 // ------------------------------------------------------------------------- //
-Secondaries LeptonicDecayChannelApprox::Decay(const ParticleDef& p_def, const DynamicData& p_condition)
+std::vector<DynamicData> LeptonicDecayChannelApprox::Decay(const ParticleDef& p_def, const DynamicData& p_condition)
 {
 
     // Sample energy from decay rate
@@ -161,7 +161,7 @@ Secondaries LeptonicDecayChannelApprox::Decay(const ParticleDef& p_def, const Dy
     Boost(anti_neutrino, massive_lepton.GetDirection(), gamma, betagamma);
 
 
-    Secondaries secondaries;
+    std::vector<DynamicData> secondaries;
     secondaries.push_back(massive_lepton);
     secondaries.push_back(neutrino);
     secondaries.push_back(anti_neutrino);
