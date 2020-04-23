@@ -127,7 +127,12 @@ Secondaries ManyBodyPhaseSpace::Decay(const ParticleDef& p_def, const DynamicDat
     Secondaries products;
 
     for (auto p : daughters_) {
-        products.emplace_back(p->particle_type, p_condition.GetPosition(), p_condition.GetDirection(), p_condition.GetEnergy(), p_condition.GetParentParticleEnergy(), p_condition.GetTime(), 0);
+        DynamicData d(p->particle_type);
+
+        d.SetPosition(p_condition.GetPosition());
+        d.SetDirection(p_condition.GetDirection());
+
+        products.push_back(std::move(d));
     }
 
     // prefactor for the phase space density
