@@ -48,6 +48,10 @@ Secondaries TwoBodyPhaseSpace::Decay(const ParticleDef& p_def, const DynamicData
 
     f.SetPosition(p_condition.GetPosition());
     s.SetPosition(p_condition.GetPosition());
+    f.SetParentParticleEnergy(p_condition.GetEnergy());
+    s.SetParentParticleEnergy(p_condition.GetEnergy());
+    f.SetTime(p_condition.GetTime());
+    s.SetTime(p_condition.GetTime());
 
     products.push_back(std::move(f));
     products.push_back(std::move(s));

@@ -131,6 +131,8 @@ Secondaries ManyBodyPhaseSpace::Decay(const ParticleDef& p_def, const DynamicDat
 
         d.SetPosition(p_condition.GetPosition());
         d.SetDirection(p_condition.GetDirection());
+        d.SetParentParticleEnergy(p_condition.GetEnergy());
+        d.SetTime(p_condition.GetTime());
 
         products.push_back(std::move(d));
     }
