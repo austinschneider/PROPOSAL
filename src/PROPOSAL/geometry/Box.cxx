@@ -14,6 +14,7 @@ Box::Box(const Vector3D position, double x, double y, double z)
     , x_(x)
     , y_(y)
     , z_(z)
+    , space_diagonal_(std::sqrt(x * x + y * y + z * z))
 {
 }
 
@@ -47,6 +48,8 @@ bool Box::compare(const Geometry& geometry) const
     else if (y_ != box->y_)
         return false;
     else if (z_ != box->z_)
+        return false;
+    else if (space_diagonal_ != box->space_diagonal_)
         return false;
     else
         return true;
@@ -268,4 +271,38 @@ std::pair<double, double> Box::DistanceToBorder(const Vector3D& position, const 
         std::swap(distance.first, distance.second);
 
     return distance;
+}
+
+// ------------------------------------------------------------------------- //
+double Box::CalculateAdaptiveSteplength(const Vector3D& position, double steplength) const
+{
+    double distance_from_center = (position - position_).magnitude();
+
+    if(steplength <= distance_from_center - 0.5 * space_diagonal_)
+        return steplength;
+
+    return DistanceToPoint(position) + PARTICLE_POSITION_RESOLUTION;
+    /* TODO: The added distance is a tolerance that says how far we can propagate
+     * into the box. If the tolerance is zero, we would never reach the box
+     * (or at least need a large amount of small steps). If the tolerance is too
+     * large, we risk skipping the box. PARTICLE_POSITION_RESOLUTION is probably
+     * too small, this needs to be discussed and tested.
+     */
+}
+
+// ------------------------------------------------------------------------- //
+double Box::DistanceToPoint(const Vector3D& position) const
+{
+    double x_max = position_.GetX() + 0.5 * x_;
+    double x_min = position_.GetX() - 0.5 * x_;
+    double y_max = position_.GetY() + 0.5 * y_;
+    double y_min = position_.GetY() - 0.5 * y_;
+    double z_max = position_.GetZ() + 0.5 * z_;
+    double z_min = position_.GetZ() - 0.5 * z_;
+
+    double dx = std::max({x_min - position.GetX(), 0., position.GetX() - x_max});
+    double dy = std::max({y_min - position.GetY(), 0., position.GetY() - y_max});
+    double dz = std::max({z_min - position.GetZ(), 0., position.GetZ() - z_max});
+
+    return std::sqrt(dx * dx + dy * dy + dz * dz);
 }

@@ -31,6 +31,7 @@
 
 #include <map>
 #include <memory>
+#include <PROPOSAL/Constants.h>
 
 #include "PROPOSAL/math/Vector3D.h"
 #include "PROPOSAL/json.hpp"
@@ -86,6 +87,16 @@ public:
      * Calculates the distance to the closest approch to the geometry center
      */
     double DistanceToClosestApproach(const Vector3D& position, const Vector3D& direction) const;
+
+    /*!
+     * For a particle at a given position, the highest possible steplength
+     * without the possibility to accidentally jump over the geometry
+     * is calculated. To save computation time, the optional argument steplength
+     * can be passed. This will interrupt the exact calculation of the adaptive
+     * steplength if it can be ensured that the geometry is sufficiently far
+     * away from the current particle. In this case, the argument is returned.
+    */
+    virtual double CalculateAdaptiveSteplength(const Vector3D& position, double steplength = INF) const = 0;
 
     // void swap(Geometry &geometry);
 

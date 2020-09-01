@@ -26,13 +26,15 @@ public:
 private:
     void DoStochasticInteraction(DynamicData&, PropagationUtility&,
             std::function<double()>);
-    bool AdvanceParticle(DynamicData& p_cond, double advance_energy,
-            double advance_grammage, double max_distance_left,
-            std::function<double()> rnd, Sector& sector);
-    double CalculateDistanceToBorder(const Vector3D& particle_position,
-            const Vector3D& particle_direction,
-            const Geometry& current_geometry);
+    int AdvanceParticle(DynamicData& p_cond, double E_f, double max_distance,
+                         std::function<double()> rnd, Sector& current_sector);
+    double CalculateAdaptiveSteplength(const Vector3D& position,
+            double max_steplength, std::shared_ptr<const Geometry> current_geometry);
+    double CalculateDistanceToBorder(const Vector3D& position,
+                                     const Vector3D& direction,
+                                     const Geometry& current_geometry);
     int maximize(const std::array<double, 3>& InteractionEnergies);
+    int minimize(const std::array<double, 3>& AdvanceGrammage);
     Sector ChooseCurrentSector(const Vector3D& particle_position,
             const Vector3D& particle_direction);
 
@@ -60,9 +62,13 @@ private:
     enum Type : int {
         MinimalE = 0,
         Decay = 1,
-        Stochastic = 2,
-        MaxDistance = 3,
-        ApproachingSector = 4
+        StochasticELoss = 2
+    };
+    enum AdvancementType : int {
+        ReachedInteraction = 0,
+        ReachedMaxDistance = 1,
+        ReachedAdaptiveSteplength = 2,
+        ReachedBorder = 3
     };
 
     std::vector<Sector> sector_list;

@@ -519,3 +519,70 @@ std::pair<double, double> Cylinder::DistanceToBorder(const Vector3D& position, c
 
     return distance;
 }
+
+double Cylinder::CalculateAdaptiveSteplength(const Vector3D& position, double steplength) const
+{
+    double distance_from_center = (position - position_).magnitude();
+
+    if (steplength <= distance_from_center - std::sqrt(radius_ * radius_ + std::pow(z_/2., 2.)))
+        return steplength;
+
+    double radial_distance = std::sqrt(
+            std::pow(position_.GetX() - position.GetX(), 2.) + std::pow(position_.GetY() - position.GetY(), 2.));
+    double z_max = position_.GetZ() + z_/2.;
+    double z_min = position_.GetZ() - z_/2.;
+
+    if (position.GetZ() <= z_max and position.GetZ() >= z_min) {
+        if ( radial_distance >= radius_) {
+            // We are outside the cylinder and between the top base and the bottom base
+            double dist1 = std::sqrt(radial_distance * radial_distance - radius_ * radius_);
+            double dist2 = radial_distance - inner_radius_;
+            double deltaR = radial_distance - radius_;
+            double deltaz = std::min(z_max - position.GetZ(), position.GetZ() - z_min);
+            double dist3 = std::sqrt(deltaz * deltaz + deltaR * deltaR);
+            return std::min({dist1, dist2, dist3});
+        } else {
+            // We are inside the (hollow) cylinder and between the top base and the bottom base
+            double deltaz = std::min(z_max - position.GetZ(), position.GetZ() - z_min);
+            double deltaR = inner_radius_ - radial_distance;
+            double dist1 = std::sqrt(deltaz * deltaz + deltaR * deltaR);
+            double dist2 = radius_ - radial_distance;
+            return std::min({dist1, dist2});
+        }
+    } else {
+        if (radial_distance >= radius_) {
+            // We are diagonally away from the cylinder
+            double deltaR = radial_distance - radius_;
+            double deltaz = std::max(position.GetZ() - z_max, z_min - position.GetZ());
+            double dist1 = std::sqrt(deltaR * deltaR + std::pow(deltaz + z_, 2.));
+            double xi = std::sqrt(radial_distance * radial_distance - radius_ * radius_);
+            double dist2 = std::sqrt(xi * xi + deltaz * deltaz);
+            if(inner_radius_ != 0) {
+                //Hollow cylinder
+                double deltaR2 = radial_distance - inner_radius_;
+                double dist3 = std::sqrt(deltaR2 * deltaR2 + deltaz * deltaz);
+                return std::min({dist1, dist2, dist3});
+            }
+            return std::min({dist1, dist2});
+        } else {
+            // We are above/below the base of the cylinder
+            double deltaR = radius_ - radial_distance;
+            double deltaz = std::max(position.GetZ() - z_max, z_min - position.GetZ());
+            double dist1 = std::sqrt(deltaR * deltaR + deltaz * deltaz);
+            double dist2 = deltaz + z_;
+            if (inner_radius_ != 0) {
+                //Hollow cylinder
+                if (radial_distance <= inner_radius_) {
+                    double deltaR2 = inner_radius_ - radial_distance;
+                    dist2 = std::sqrt(deltaR2 * deltaR2 + std::pow(deltaz + z_, 2.));
+                    return std::min({dist1, dist2});
+                } else {
+                    double deltaR2 = radial_distance - inner_radius_;
+                    double dist3 = std::sqrt(deltaR2 * deltaR2 + deltaz * deltaz);
+                    return std::min({dist1, dist2, dist3});
+                }
+            }
+            return std::min({dist1, dist2});
+        }
+    }
+}

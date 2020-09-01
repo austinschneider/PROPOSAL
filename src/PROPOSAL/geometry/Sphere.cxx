@@ -237,3 +237,21 @@ std::pair<double, double> Sphere::DistanceToBorder(const Vector3D& position, con
 
     return distance;
 }
+
+// ------------------------------------------------------------------------- //
+double Sphere::CalculateAdaptiveSteplength(const Vector3D& position, double steplength) const
+{
+    double distance_from_center = (position - position_).magnitude();
+
+    if(steplength <= distance_from_center - radius_)
+        return steplength;
+
+    if(distance_from_center >= radius_) {
+        // We are outside the sphere
+        double x = std::sqrt(distance_from_center * distance_from_center - radius_ * radius_);
+        return std::min(x, distance_from_center - inner_radius_);
+    } else {
+        // We are inside the sphere, possibly a hollow sphere
+        return radius_ - distance_from_center;
+    }
+}

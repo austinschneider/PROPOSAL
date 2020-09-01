@@ -42,6 +42,7 @@ public:
 
     // Methods
     std::pair<double, double> DistanceToBorder(const Vector3D& position, const Vector3D& direction) const override;
+    double CalculateAdaptiveSteplength(const Vector3D& position, double steplength = INF) const override;
 
     // Getter & Setter
     double GetInnerRadius() const { return inner_radius_; }

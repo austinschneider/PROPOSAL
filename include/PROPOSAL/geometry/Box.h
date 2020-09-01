@@ -45,6 +45,7 @@ public:
 
     // Methods
     std::pair<double, double> DistanceToBorder(const Vector3D& position, const Vector3D& direction) const override;
+    double CalculateAdaptiveSteplength(const Vector3D& position, double steplength = INF) const override;
 
     // Getter & Setter
     double GetX() const { return x_; }
@@ -58,10 +59,12 @@ public:
 private:
     bool compare(const Geometry&) const override;
     void print(std::ostream&) const override;
+    double DistanceToPoint(const Vector3D&) const;
 
     double x_; //!< width of box in x-direction
     double y_; //!< width of box in y-direction
     double z_; //!< width of box in z-direction
+    double space_diagonal_;
 };
 
 } // namespace PROPOSAL
