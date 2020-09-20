@@ -54,8 +54,8 @@ CrossSection* IonizationFactory::CreateIonization(const ParticleDef& particle_de
 
     if (it != ioniz_map_enum_.end())
     {
-        std::unique_ptr<Ionization> temp_param(it->second(particle_def, medium, cuts, def.multiplier)); 
-        return new IonizIntegral(*temp_param);;
+        std::unique_ptr<Ionization> param(it->second(particle_def, medium, cuts, def.multiplier)); 
+        return new IonizIntegral(*param);;
     } else
     {
         log_fatal("Ionization %s not registered!", typeid(def.parametrization).name());
@@ -79,8 +79,8 @@ CrossSection* IonizationFactory::CreateIonization(const ParticleDef& particle_de
 
     if (it != ioniz_map_enum_.end())
     {
-        std::unique_ptr<Ionization> temp_param(it->second(particle_def, medium, cuts, def.multiplier));        
-        return new IonizInterpolant(*temp_param, interpolation_def);;
+        std::unique_ptr<Ionization> param(it->second(particle_def, medium, cuts, def.multiplier));        
+        return new IonizInterpolant(*param, interpolation_def);;
     } else
     {
         log_fatal("Ionization %s not registered!", typeid(def.parametrization).name());
