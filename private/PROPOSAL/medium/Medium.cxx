@@ -350,7 +350,7 @@ Water::Water(double rho)
     : Medium(
           "water",
           rho,
-          75.0,     // I
+          79.7,     // I
           -3.5017,  // C
           0.09116,  // a
           3.4773,   // m
@@ -365,14 +365,14 @@ Ice::Ice(double rho)
     : Medium(
           "ice",
           rho,
-          75.0,     // I
-          -3.5017,  // C
+          79.7,     // I
+          -3.5873,  // C
           0.09116,  // a
           3.4773,   // m
-          0.2400,   // X0
-          2.8004,   // X1
+          0.2586,   // X0
+          2.8190,   // X1
           0,        // d0
-          0.917,    // massDensitiy
+          0.918,    // massDensitiy
           {Components::Hydrogen(2),
            Components::Oxygen()}) {}
 
@@ -612,6 +612,19 @@ CascadiaBasinWater::CascadiaBasinWater(double rho)
             Components::Sulfur(5.2487e-4)
         })
 {}
+
+LiquidArgon::LiquidArgon(double rho)
+    : Medium("liquidargon",
+             rho,
+             188.0,     // I
+             -5.2146,   // C
+             0.19559,   // a
+             3.0000,    // m
+             0.2000,    // X0
+             3.0000,    // X1
+             0,         // d0
+             1.396,     // massDensity
+             {Components::Argon()}) {}
 
 /******************************************************************************
  *                        private Helper Funcitons                             *

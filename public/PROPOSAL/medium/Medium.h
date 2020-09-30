@@ -166,6 +166,7 @@ MEDIUM_DEF(Lead)
 MEDIUM_DEF(Copper)
 MEDIUM_DEF(Uranium)
 MEDIUM_DEF(Paraffin)
+MEDIUM_DEF(LiquidArgon)
 
 class Air : public Medium {
    public:
@@ -219,13 +220,13 @@ MEDIUM_DEF(CascadiaBasinWater)
 
 namespace PROPOSAL {
 enum Medium_Type { WATER, ICE, SALT, STANDARDROCK, FREJUSROCK, IRON, HYDROGEN, LEAD,
-    COPPER, URANIUM, AIR, PARAFFIN, ANTARESWATER, CASCADIABASINWATER, };
+    COPPER, URANIUM, AIR, PARAFFIN, ANTARESWATER, CASCADIABASINWATER, LIQUIDARGON};
 } // namespace PROPOSAL
 
 namespace PROPOSAL {
-static const std::array<std::string, 14>  Medium_Name = { "water", "ice", "salt", "standardrock",
+static const std::array<std::string, 15>  Medium_Name = { "water", "ice", "salt", "standardrock",
     "frejusrock", "iron", "hydrogen", "lead", "copper", "uranium", "air", "paraffin",
-    "antareswater", "cascadiabasinwater", };
+    "antareswater", "cascadiabasinwater", "liquidargon"};
 } // namespace PROPOSAL
 
 /* namespace PROPOSAL { */
