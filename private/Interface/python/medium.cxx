@@ -125,6 +125,10 @@ void init_medium(py::module& m) {
     MEDIUM_DEF(m_sub, AntaresWater)
     MEDIUM_DEF(m_sub, CascadiaBasinWater)
     MEDIUM_DEF(m_sub, LiquidArgon)
+    MEDIUM_DEF(m_sub, HardRock)
+    MEDIUM_DEF(m_sub, HardHardRock)
+    MEDIUM_DEF(m_sub, LightRock)
+    MEDIUM_DEF(m_sub, LightLightRock)
 
     py::class_<Density_distr, std::shared_ptr<Density_distr>>(
         m_sub, "density_distribution", R"pbdoc(

@@ -20,6 +20,10 @@ static std::map<const Medium_Type, std::shared_ptr<Medium>> Medium_Map{
     { Medium_Type::ANTARESWATER, std::make_shared<AntaresWater>() },
     { Medium_Type::CASCADIABASINWATER, std::make_shared<CascadiaBasinWater>() },
     { Medium_Type::LIQUIDARGON, std::make_shared<LiquidArgon>() },
+    { Medium_Type::HARDROCK, std::make_shared<HardRock>() },
+    { Medium_Type::HARDHARDROCK, std::make_shared<HardHardRock>() },
+    { Medium_Type::LIGHTROCK, std::make_shared<LightRock>() },
+    { Medium_Type::LIGHTLIGHTROCK, std::make_shared<LightLightRock>() },
 };
 } // namespace PROPOSAL
 

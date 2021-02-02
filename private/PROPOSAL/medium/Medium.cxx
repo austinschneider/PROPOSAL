@@ -422,6 +422,58 @@ StandardRock::StandardRock(double rho)
              2.650,    // massDensity
              {Components::StandardRock()}) {}
 
+HardRock::HardRock(double rho)
+    : Medium("hardrock",
+             rho,
+             136.4,    // I
+             -3.7738,  // C
+             0.08301,  // a
+             3.4120,   // m
+             0.0492,   // X0
+             3.0549,   // X1
+             0,        // d0
+             2.700,    // massDensity
+             {Components::StandardRock()}) {}
+
+HardHardRock::HardHardRock(double rho)
+    : Medium("hardhardrock",
+             rho,
+             136.4,    // I
+             -3.7738,  // C
+             0.08301,  // a
+             3.4120,   // m
+             0.0492,   // X0
+             3.0549,   // X1
+             0,        // d0
+             2.85,    // massDensity
+             {Components::StandardRock()}) {}
+
+LightRock::LightRock(double rho)
+    : Medium("lightrock",
+             rho,
+             136.4,    // I
+             -3.7738,  // C
+             0.08301,  // a
+             3.4120,   // m
+             0.0492,   // X0
+             3.0549,   // X1
+             0,        // d0
+             2.600,    // massDensity
+             {Components::StandardRock()}) {}
+
+LightLightRock::LightLightRock(double rho)
+    : Medium("lightlightrock",
+             rho,
+             136.4,    // I
+             -3.7738,  // C
+             0.08301,  // a
+             3.4120,   // m
+             0.0492,   // X0
+             3.0549,   // X1
+             0,        // d0
+             2.450,    // massDensity
+             {Components::StandardRock()}) {}
+
 FrejusRock::FrejusRock(double rho)
     : Medium("frejusrock",
              rho,
